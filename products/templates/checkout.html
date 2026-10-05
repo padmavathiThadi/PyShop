@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="mb-4">Checkout</h1>
+
+{% for item in cart_products %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+
+                <div class="col-md-2">
+                    <img src="{{ item.product.image_url }}"
+                         alt="{{ item.product.name }}"
+                         style="width: 100px;
+                                height: 100px;
+                                object-fit: contain;">
+                </div>
+
+                <div class="col-md-6">
+                    <h5>{{ item.product.name }}</h5>
+
+                    <p class="mb-0">
+                        Quantity: {{ item.quantity }}
+                    </p>
+
+                    <p class="mb-0">
+                        Price:
+                        ${{ item.product.price|floatformat:2 }}
+                    </p>
+                </div>
+
+                <div class="col-md-4 text-md-end">
+                    <strong>
+                        ${{ item.item_total|floatformat:2 }}
+                    </strong>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<hr>
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <h5 class="mb-3">
+            Have a discount code?
+        </h5>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <input type="text"
+                       name="discount_code"
+                       class="form-control"
+                       placeholder="Enter discount code">
+
+                <button type="submit"
+                        class="btn btn-success">
+                    Apply
+                </button>
+            </div>
+
+        </form>
+
+        {% if discount_error %}
+            <div class="alert alert-danger mt-3 mb-0">
+                ❌ {{ discount_error }}
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="text-end">
+
+    <p>
+        Subtotal:
+        <strong>
+            ${{ subtotal|floatformat:2 }}
+        </strong>
+    </p>
+
+    {% if discount %}
+        <p class="text-success">
+            Discount ({{ discount_percent }}%):
+            <strong>
+                -${{ discount_amount|floatformat:2 }}
+            </strong>
+        </p>
+    {% endif %}
+
+    <h3>
+        Total:
+        ${{ total|floatformat:2 }}
+    </h3>
+
+    <form method="POST"
+          action="{% url 'place_order' %}">
+
+        {% csrf_token %}
+
+        <button type="submit"
+                class="btn btn-primary btn-lg">
+            Place Order
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
